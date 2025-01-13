@@ -2,14 +2,11 @@
 from transformers import MarianMTModel, MarianTokenizer
 import gradio as gr
 
-# Define the model name
-model_name = 'Helsinki-NLP/opus-mt-en-de'
+def translate(text, lang_pair):
+    model_name = language_pairs[lang_pair]
+    tokenizer = MarianTokenizer.from_pretrained(model_name)
+    model = MarianMTModel.from_pretrained(model_name)
 
-# Load the tokenizer and model
-tokenizer = MarianTokenizer.from_pretrained(model_name)
-model = MarianMTModel.from_pretrained(model_name)
-
-def translate(text):
     # Tokenize the input text
     tokenized_text = tokenizer.prepare_seq2seq_batch([text], return_tensors='pt')
 
@@ -21,13 +18,24 @@ def translate(text):
 
     return translated_text
 
+# English <-> French, German
+language_pairs = {
+    "English to German": "Helsinki-NLP/opus-mt-en-de",
+    "German to English": "Helsinki-NLP/opus-mt-de-en",
+    "English to French": "Helsinki-NLP/opus-mt-en-fr",
+    "French to English": "Helsinki-NLP/opus-mt-fr-en",
+}
+
 # Create a Gradio interface
 iface = gr.Interface(
     fn=translate,
-    inputs=gr.Textbox(label="Enter text to translate"),
+    inputs=[
+        gr.Textbox(label="Enter text to translate"),
+        gr.Dropdown(list(language_pairs.keys()), label="Language Pair"),
+    ],
     outputs=gr.Textbox(label="Translated text"),
-    title="English to German Translator",
-    description="Enter English text and get the German translation."
+    title="Multi-Language Translator",
+    description="Enter text and get the selected language translation."
 )
 
 # Launch the Gradio interface
