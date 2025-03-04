@@ -1,4 +1,4 @@
-# PyTorch Translator
+# AI Translator
 
 TODO:
 * Toggle for formal and informal translation tones
